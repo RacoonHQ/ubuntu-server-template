@@ -6,7 +6,7 @@
 
 This work is licensed under the MIT License. You may obtain a copy of the License at:
 
-[./LICENSE](./LICENSE)
+[LICENSE](./LICENSE)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -32,7 +32,7 @@ Untuk kemudahan deployment, tersedia file `Ubuntu-Server-Template.ova` yang beri
 - Apache virtual host
 - Jaringan ganda (NAT + Host-Only)
 
-**Download Link:** (https://drive.google.com/file/d/1xhbjcaMka-jJ4iZ2plrIJz_W4JxofRo2/view?usp=sharing) [Ubuntu-Server-Template.ova]
+**Download Link:** [📥 Ubuntu-Server-Template.ova](https://drive.google.com/file/d/1xhbjcaMka-jJ4iZ2plrIJz_W4JxofRo2/view?usp=sharing)
 
 Cara penggunaan:
 1. Import file `.ova` ke VirtualBox
