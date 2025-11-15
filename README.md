@@ -32,7 +32,7 @@ Untuk kemudahan deployment, tersedia file `Ubuntu-Server-Template.ova` yang beri
 - Apache virtual host
 - Jaringan ganda (NAT + Host-Only)
 
-**Download Link:** https://drive.google.com/file/d/1xhbjcaMka-jJ4iZ2plrIJz_W4JxofRo2/view?usp=sharing [Ubuntu-Server-Template.ova]
+**Download Link:** (https://drive.google.com/file/d/1xhbjcaMka-jJ4iZ2plrIJz_W4JxofRo2/view?usp=sharing) [Ubuntu-Server-Template.ova]
 
 Cara penggunaan:
 1. Import file `.ova` ke VirtualBox
