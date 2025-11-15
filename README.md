@@ -20,6 +20,25 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 Dokumen ini menyajikan panduan lengkap dan terstruktur untuk mengonfigurasi server Ubuntu 24.04 LTS di lingkungan virtual machine (VM) menggunakan VirtualBox. Konfigurasi mencakup jaringan ganda (Host-Only dan NAT), akses SSH dengan port custom, server DNS (BIND9), virtual host Apache, sertifikat SSL self-signed (untuk testing lokal), dan file sharing Samba. Panduan ini dirancang sebagai template yang dapat disesuaikan untuk proyek pengembangan atau testing internal.
 
+## OVA Template
+
+Untuk kemudahan deployment, tersedia file `Ubuntu-Server-Template.ova` yang berisi:
+
+- Ubuntu 24.04 LTS pre-installed
+- SSH dengan port custom 2222
+- SSL self-signed certificate
+- DNS server BIND9 terkonfigurasi
+- Samba file sharing
+- Apache virtual host
+- Jaringan ganda (NAT + Host-Only)
+
+**Download Link:** https://drive.google.com/file/d/1xhbjcaMka-jJ4iZ2plrIJz_W4JxofRo2/view?usp=sharing [Ubuntu-Server-Template.ova]
+
+Cara penggunaan:
+1. Import file `.ova` ke VirtualBox
+2. Sesuaikan IP address dan domain sesuai kebutuhan
+3. Start VM dan gunakan sesuai panduan di bawah
+
 ## Catatan Penting
 
 - Asumsikan akses awal melalui console VM (misalnya, VirtualBox GUI)
