@@ -357,7 +357,7 @@ sudo a2ensite [DOMAIN].conf
 
 #### Opsi 1: Copy template yang sudah ada (lebih cepat)
 ```bash
-sudo cp /etc/apache2/sites-available/serverubuntu.com.conf /etc/apache2/sites-available/webmail.[DOMAIN].conf
+sudo cp /etc/apache2/sites-available/webmail.serverubuntu.com.conf /etc/apache2/sites-available/webmail.[DOMAIN].conf
 
 # Edit file yang sudah di-copy untuk menyesuaikan ServerName dan DocumentRoot
 sudo nano /etc/apache2/sites-available/webmail.[DOMAIN].conf
