@@ -214,7 +214,7 @@ zone "[DOMAIN]" {
 
 ### Buat file zona:
 ```bash
-sudo cp /etc/bind/db.local /etc/bind/db.[DOMAIN]
+sudo cp /etc/bind/db.serverubuntu.com /etc/bind/db.[DOMAIN]
 sudo nano /etc/bind/db.[DOMAIN]
 ```
 
