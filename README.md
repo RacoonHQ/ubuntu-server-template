@@ -1,4 +1,4 @@
-# Template Konfigurasi Server Ubuntu 24.04 LTS
+# Template Konfigurasi Server Ubuntu 24.04 LTS (Manual Setup)
 
 ## License
 
@@ -12,32 +12,15 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ---
 
 ## Deskripsi
 
-Dokumen ini menyajikan panduan lengkap dan terstruktur untuk mengonfigurasi server Ubuntu 24.04 LTS di lingkungan virtual machine (VM) menggunakan VirtualBox. Konfigurasi mencakup jaringan ganda (Host-Only dan NAT), akses SSH dengan port custom, server DNS (BIND9), virtual host Apache, sertifikat SSL self-signed (untuk testing lokal), dan file sharing Samba. Panduan ini dirancang sebagai template yang dapat disesuaikan untuk proyek pengembangan atau testing internal.
+Dokumen ini menyajikan panduan lengkap dan terstruktur untuk mengonfigurasi server Ubuntu 24.04 LTS dari awal di lingkungan virtual machine (VM) menggunakan VirtualBox. Konfigurasi mencakup jaringan ganda (Host-Only dan NAT), akses SSH dengan port custom, server DNS (BIND9), virtual host Apache, sertifikat SSL self-signed (untuk testing lokal), dan file sharing Samba. Panduan ini dirancang sebagai template yang dapat disesuaikan untuk proyek pengembangan atau testing internal.
 
-## OVA Template
-
-Untuk kemudahan deployment, tersedia file `Ubuntu-Server-Template.ova` yang berisi:
-
-- Ubuntu 24.04 LTS pre-installed
-- SSH dengan port custom 2222
-- SSL self-signed certificate
-- DNS server BIND9 terkonfigurasi
-- Samba file sharing
-- Apache virtual host
-- Jaringan ganda (NAT + Host-Only)
-
-**Download Link:** [📥 Ubuntu-Server-Template.ova](https://drive.google.com/file/d/1xhbjcaMka-jJ4iZ2plrIJz_W4JxofRo2/view?usp=sharing)
-
-Cara penggunaan:
-1. Import file `.ova` ke VirtualBox
-2. Sesuaikan IP address dan domain sesuai kebutuhan
-3. Start VM dan gunakan sesuai panduan di bawah
+**🚀 Ingin setup yang lebih cepat?** Lihat [README_TEMPLATE.md](./README_TEMPLATE.md) untuk OVA template dengan semua service pre-configured.
 
 ## Catatan Penting
 
@@ -96,7 +79,7 @@ Pastikan konektivitas dua arah untuk testing.
 
 ### Di VM, edit file Netplan:
 ```bash
-sudo nano /etc/netplan/01-netcfg.yaml
+sudo nano /etc/netplan/50-cloud-init.yaml
 ```
 
 ### Isi dengan konfigurasi berikut:
@@ -282,7 +265,7 @@ allow-query { localhost; 192.168.56.0/24; };
 ```bash
 sudo named-checkconf
 sudo named-checkzone [DOMAIN] /etc/bind/db.[DOMAIN]
-sudo systemctl restart bind9
+sudo systemctl restart bind9 && sudo systemctl enable bind9
 ```
 
 ### Konfigurasi UFW untuk DNS:
@@ -310,122 +293,145 @@ sudo mkdir -p /var/www/[DOMAIN]/public_html
 sudo mkdir -p /var/www/webmail.[DOMAIN]/public_html
 sudo chown -R $USER:$USER /var/www/[DOMAIN]/public_html
 sudo chown -R $USER:$USER /var/www/webmail.[DOMAIN]/public_html
+sudo chmod -R 755 /var/www/[DOMAIN]
+sudo chmod -R 755 /var/www/webmail.[DOMAIN]
 ```
 
-### Buat index.html:
+### Buat file index.html untuk testing:
 ```bash
-echo "<h1>Selamat Datang di [DOMAIN]</h1>" | sudo tee /var/www/[DOMAIN]/public_html/index.html
-echo "<h1>Webmail [DOMAIN]</h1>" | sudo tee /var/www/webmail.[DOMAIN]/public_html/index.html
+echo "<h1>Selamat datang di [DOMAIN]</h1>" | sudo tee /var/www/[DOMAIN]/public_html/index.html
+echo "<h1>Selamat datang di webmail.[DOMAIN]</h1>" | sudo tee /var/www/webmail.[DOMAIN]/public_html/index.html
 ```
 
-### Buat dan konfigurasi virtual host:
-
-#### Opsi 1: Copy template yang sudah ada (lebih cepat)
-```bash
-sudo cp /etc/apache2/sites-available/serverubuntu.com.conf /etc/apache2/sites-available/[DOMAIN].conf
-
-# Edit file yang sudah di-copy untuk menyesuaikan [DOMAIN]
-sudo nano /etc/apache2/sites-available/[DOMAIN].conf
-```
-
-#### Opsi 2: Buat file baru dari awal
+### Buat virtual host untuk domain utama:
 ```bash
 sudo nano /etc/apache2/sites-available/[DOMAIN].conf
 ```
 
-### Isi konfigurasi (untuk Opsi 2):
+### Isi dengan:
 ```apache
 <VirtualHost *:80>
     ServerName [DOMAIN]
+    ServerAlias www.[DOMAIN]
     DocumentRoot /var/www/[DOMAIN]/public_html
+
     <Directory /var/www/[DOMAIN]/public_html>
+        Options -Indexes +FollowSymLinks
         AllowOverride All
         Require all granted
     </Directory>
 </VirtualHost>
 ```
 
-### Aktifkan virtual host:
-```bash
-sudo a2ensite [DOMAIN].conf
-```
-
-### Buat dan konfigurasi virtual host webmail (mirip, ganti ServerName dan DocumentRoot):
-
-#### Opsi 1: Copy template yang sudah ada (lebih cepat)
-```bash
-sudo cp /etc/apache2/sites-available/webmail.serverubuntu.com.conf /etc/apache2/sites-available/webmail.[DOMAIN].conf
-
-# Edit file yang sudah di-copy untuk menyesuaikan ServerName dan DocumentRoot
-sudo nano /etc/apache2/sites-available/webmail.[DOMAIN].conf
-```
-
-#### Opsi 2: Buat file baru dari awal
+### Buat virtual host untuk webmail:
 ```bash
 sudo nano /etc/apache2/sites-available/webmail.[DOMAIN].conf
 ```
 
-### Isi konfigurasi webmail (untuk Opsi 2):
+### Isi dengan:
 ```apache
 <VirtualHost *:80>
     ServerName webmail.[DOMAIN]
     DocumentRoot /var/www/webmail.[DOMAIN]/public_html
+
     <Directory /var/www/webmail.[DOMAIN]/public_html>
+        Options -Indexes +FollowSymLinks
         AllowOverride All
         Require all granted
     </Directory>
 </VirtualHost>
 ```
 
-### Aktifkan virtual host webmail:
+### Aktifkan sites dan modules:
 ```bash
+sudo a2ensite [DOMAIN].conf
 sudo a2ensite webmail.[DOMAIN].conf
-```
-
-### Nonaktifkan default dan aktifkan modul:
-```bash
 sudo a2dissite 000-default.conf
-sudo a2enmod ssl rewrite
+sudo a2enmod rewrite
 sudo systemctl restart apache2
 ```
 
-### Konfigurasi UFW untuk HTTP:
+### Konfigurasi UFW untuk Apache:
 ```bash
 sudo ufw allow from 192.168.56.0/24 to any port 80 proto tcp && sudo ufw reload
 ```
 
-### Verifikasi: Akses `http://[DOMAIN]` di browser Windows
+### Verifikasi: Akses `http://[DOMAIN]` dan `http://webmail.[DOMAIN]`
 
 ---
 
-## 8. Konfigurasi SSL (Self-Signed untuk Testing Lokal)
+## 8. Konfigurasi SSL Self-Signed (Testing Lokal)
 
-### Buat sertifikat self-signed:
+### Generate certificate untuk domain utama:
 ```bash
-sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/[DOMAIN].key -out /etc/ssl/certs/[DOMAIN].crt -subj "/CN=[DOMAIN]"
+sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+    -keyout /etc/ssl/private/[DOMAIN].key \
+    -out /etc/ssl/certs/[DOMAIN].crt \
+    -subj "/C=ID/ST=Jakarta/L=Jakarta/O=Company/OU=IT/CN=[DOMAIN]"
 ```
 
-### Edit virtual host untuk HTTPS:
+### Generate certificate untuk webmail:
+```bash
+sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+    -keyout /etc/ssl/private/webmail.[DOMAIN].key \
+    -out /etc/ssl/certs/webmail.[DOMAIN].crt \
+    -subj "/C=ID/ST=Jakarta/L=Jakarta/O=Company/OU=IT/CN=webmail.[DOMAIN]"
+```
+
+### Enable SSL module:
+```bash
+sudo a2enmod ssl
+sudo systemctl restart apache2
+```
+
+### Edit virtual host untuk SSL (domain utama):
 ```bash
 sudo nano /etc/apache2/sites-available/[DOMAIN].conf
 ```
 
-### Tambahkan blok SSL:
+### Tambahkan di bawah konfigurasi existing:
 ```apache
 <VirtualHost *:443>
     ServerName [DOMAIN]
+    ServerAlias www.[DOMAIN]
     DocumentRoot /var/www/[DOMAIN]/public_html
-    SSLEngine on
-    SSLCertificateFile /etc/ssl/certs/[DOMAIN].crt
-    SSLCertificateKeyFile /etc/ssl/private/[DOMAIN].key
+
     <Directory /var/www/[DOMAIN]/public_html>
+        Options -Indexes +FollowSymLinks
         AllowOverride All
         Require all granted
     </Directory>
+
+    SSLEngine on
+    SSLCertificateFile /etc/ssl/certs/[DOMAIN].crt
+    SSLCertificateKeyFile /etc/ssl/private/[DOMAIN].key
 </VirtualHost>
 ```
 
-### Ulangi untuk webmail, lalu restart Apache:
+### Edit virtual host untuk SSL (webmail):
+```bash
+sudo nano /etc/apache2/sites-available/webmail.[DOMAIN].conf
+```
+
+### Tambahkan di bawah konfigurasi existing:
+```apache
+<VirtualHost *:443>
+    ServerName webmail.[DOMAIN]
+    DocumentRoot /var/www/webmail.[DOMAIN]/public_html
+
+    <Directory /var/www/webmail.[DOMAIN]/public_html>
+        Options -Indexes +FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    SSLEngine on
+    SSLCertificateFile /etc/ssl/certs/webmail.[DOMAIN].crt
+    SSLCertificateKeyFile /etc/ssl/private/webmail.[DOMAIN].key
+</VirtualHost>
+```
+
+### Restart Apache:
 ```bash
 sudo systemctl restart apache2
 ```
@@ -435,69 +441,80 @@ sudo systemctl restart apache2
 sudo ufw allow from 192.168.56.0/24 to any port 443 proto tcp && sudo ufw reload
 ```
 
-### Verifikasi: Akses `https://[DOMAIN]` (terima peringatan browser)
+### Verifikasi: Akses `https://[DOMAIN]` dan `https://webmail.[DOMAIN]`
 
 ---
 
-## Troubleshooting Umum
+## 9. Verifikasi Akhir dan Testing
 
-### Ping gagal
-Periksa UFW ICMP:
+### Test semua service:
 ```bash
-sudo nano /etc/ufw/before.rules
-# Tambahkan: -A ufw-before-input -s 192.168.56.0/24 -p icmp --icmp-type echo-request -j ACCEPT
-sudo ufw reload
+# Test SSH
+ssh -p 2222 [NAMA_USER]@[IP_HOST_ONLY]
+
+# Test DNS
+dig @localhost [DOMAIN]
+dig @localhost webmail.[DOMAIN]
+
+# Test Apache
+curl -I http://[DOMAIN]
+curl -I https://[DOMAIN]
+
+# Test Samba
+smbclient -L //[IP_HOST_ONLY]/shared -N
 ```
 
-### BIND error
+### Check status services:
 ```bash
-sudo named-checkconf
-# Periksa tanda titik koma (;)
+sudo systemctl status ssh
+sudo systemctl status bind9
+sudo systemctl status apache2
+sudo systemctl status smbd
+sudo ufw status
 ```
 
-### Apache failed
-```bash
-sudo apache2ctl configtest
-# Periksa sintaks file .conf
-```
-
-### Situs tidak tampil
-Edit hosts di Windows, flush DNS:
-```bash
-ipconfig /flushdns
-```
-
-### Certbot gagal
-Gunakan self-signed untuk lokal; untuk produksi, daftarkan domain dan buka port 80/443.
+### Test dari Windows:
+1. **SSH:** PuTTY ke `[IP_HOST_ONLY]:2222`
+2. **Web:** Browser ke `http://[DOMAIN]` dan `https://[DOMAIN]`
+3. **File Sharing:** `\\[IP_HOST_ONLY]\shared`
+4. **DNS:** Ping `[DOMAIN]` dan `webmail.[DOMAIN]`
 
 ---
 
-## Kesimpulan
+## 10. Troubleshooting
 
-Template ini menyediakan fondasi lengkap untuk server Ubuntu yang aman dan fungsional. Untuk produksi, pertimbangkan:
-- Domain publik
-- Firewall lebih ketat
-- Monitoring (misalnya, Fail2Ban)
+### SSH tidak bisa connect:
+- Cek UFW: `sudo ufw status`
+- Cek service SSH: `sudo systemctl status ssh`
+- Cek port: `sudo ss -tlnp | grep :2222`
 
-Jika memerlukan modifikasi, sesuaikan placeholder dan uji setiap bagian secara bertahap. Hubungi tim dukungan untuk isu spesifik.
+### DNS tidak resolve:
+- Cek BIND9: `sudo systemctl status bind9`
+- Test konfigurasi: `sudo named-checkzone [DOMAIN] /etc/bind/db.[DOMAIN]`
+- Cek log: `sudo journalctl -u bind9`
+
+### Apache tidak accessible:
+- Cek Apache: `sudo systemctl status apache2`
+- Test konfigurasi: `sudo apache2ctl configtest`
+- Cek log: `sudo tail -f /var/log/apache2/error.log`
+
+### Samba tidak accessible:
+- Cek Samba: `sudo systemctl status smbd`
+- Test konfigurasi: `sudo testparm`
+- Cek log: `sudo tail -f /var/log/samba/log.smbd`
 
 ---
 
-## Informasi Dokumen
+## Selesai!
 
-- **Versi Dokumen:** 1.0
-- **Tanggal Pembuatan:** 15 November 2025
-- **Sistem Target:** Ubuntu 24.04 LTS
-- **Virtualisasi:** VirtualBox
-- **Host OS:** Windows
+Server Ubuntu 24.04 LTS Anda telah dikonfigurasi dengan:
+- ✅ User dengan hak sudo
+- ✅ Jaringan ganda (NAT + Host-Only)
+- ✅ SSH dengan port custom 2222
+- ✅ DNS server BIND9
+- ✅ Web server Apache dengan virtual host
+- ✅ SSL self-signed certificate
+- ✅ File sharing Samba
+- ✅ Firewall UFW terkonfigurasi
 
----
-
-## Placeholder yang Perlu Diganti
-
-- `[NAMA_USER]` - Nama user baru yang akan dibuat (contoh: `admin`)
-- `[IP_HOST_ONLY]` - IP address untuk interface Host-Only (contoh: `192.168.56.10`)
-- `[IP_PUBLIK]` - IP address publik atau eksternal (contoh: `185.125.190.21`)
-- `[IP_GATEWAY_HOST_ONLY]` - Gateway untuk Host-Only network (contoh: `192.168.56.1`)
-- `[DOMAIN]` - Nama domain utama (contoh: `serverubuntu.com`)
-- `[NAMA_SERVER]` - Hostname untuk server (contoh: `ubuntu-server`)
+Server siap digunakan untuk pengembangan dan testing internal.
