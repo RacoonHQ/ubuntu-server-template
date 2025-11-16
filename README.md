@@ -282,7 +282,7 @@ allow-query { localhost; 192.168.56.0/24; };
 ```bash
 sudo named-checkconf
 sudo named-checkzone [DOMAIN] /etc/bind/db.[DOMAIN]
-sudo systemctl restart bind9 && sudo systemctl enable bind9
+sudo systemctl restart bind9
 ```
 
 ### Konfigurasi UFW untuk DNS:
