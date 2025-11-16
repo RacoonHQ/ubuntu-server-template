@@ -63,7 +63,7 @@ Pastikan konektivitas dua arah untuk testing.
 
 ### Di VM, edit file Netplan:
 ```bash
-sudo nano /etc/netplan/01-netcfg.yaml
+sudo nano /etc/netplan/50-cloud-init.yaml
 ```
 
 ### Isi dengan konfigurasi berikut:
@@ -76,7 +76,7 @@ network:
       dhcp4: true  # NAT untuk internet
     enp0s8:
       dhcp4: false
-      addresses: [[IP_HOST_ONLY]/24]
+      addresses: [[IP_HOST_ONLY]/24] 
       nameservers:
         addresses: [8.8.8.8, 8.8.4.4]
 ```
