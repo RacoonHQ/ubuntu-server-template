@@ -57,7 +57,40 @@ Cara penggunaan:
 
 ---
 
-## 1. Konfigurasi Jaringan (Host-Only dan NAT)
+## 1. Membuat User Baru dan Konfigurasi Sudo
+
+### Buat user baru:
+```bash
+sudo adduser [NAMA_USER]
+```
+
+### Tambahkan user ke group sudo:
+```bash
+sudo usermod -aG sudo [NAMA_USER]
+```
+
+### Verifikasi user dan group:
+```bash
+groups [NAMA_USER]
+# Harus menampilkan: [NAMA_USER] sudo
+```
+
+### Login ke user baru (opsional):
+```bash
+su - [NAMA_USER]
+# Verifikasi sudo dengan: sudo whoami
+# Harus menampilkan: root
+exit
+```
+
+**Catatan Penting:**
+- Ganti `[NAMA_USER]` dengan nama user yang diinginkan
+- Disarankan untuk tidak menggunakan `root` untuk operasi sehari-hari
+- User yang ditambahkan ke group sudo akan memiliki hak akses administrator
+
+---
+
+## 2. Konfigurasi Jaringan (Host-Only dan NAT)
 
 Pastikan konektivitas dua arah untuk testing.
 
@@ -99,7 +132,7 @@ ping [IP_HOST_ONLY]
 
 ---
 
-## 2. Update Sistem dan Instalasi Paket Dasar
+## 3. Update Sistem dan Instalasi Paket Dasar
 
 ### Update dan upgrade sistem:
 ```bash
@@ -119,7 +152,7 @@ sudo reboot
 
 ---
 
-## 3. Konfigurasi SSH (Port Custom 2222)
+## 4. Konfigurasi SSH (Port Custom 2222)
 
 ### Aktifkan SSH:
 ```bash
@@ -156,7 +189,7 @@ sudo ufw reload
 
 ---
 
-## 4. Konfigurasi Samba (File Sharing)
+## 5. Konfigurasi Samba (File Sharing)
 
 ### Buat direktori share:
 ```bash
@@ -197,7 +230,7 @@ sudo ufw allow from 192.168.56.0/24 to any app Samba && sudo ufw reload
 
 ---
 
-## 5. Konfigurasi DNS Server (BIND9) untuk `[DOMAIN]` dan `webmail.[DOMAIN]`
+## 6. Konfigurasi DNS Server (BIND9) untuk `[DOMAIN]` dan `webmail.[DOMAIN]`
 
 ### Edit zona utama:
 ```bash
@@ -269,7 +302,7 @@ dig @localhost [DOMAIN]
 
 ---
 
-## 6. Konfigurasi Virtual Host (Apache)
+## 7. Konfigurasi Virtual Host (Apache)
 
 ### Buat direktori:
 ```bash
@@ -316,7 +349,15 @@ sudo a2ensite [DOMAIN].conf
 
 ### Virtual host webmail (mirip, ganti ServerName dan DocumentRoot):
 ```bash
+# Opsi 1: Copy template yang sudah ada (lebih cepat)
+sudo cp /etc/apache2/sites-available/serverubuntu.com.conf /etc/apache2/sites-available/webmail.[DOMAIN].conf
+
+# Opsi 2: Buat file baru dari awal
 sudo nano /etc/apache2/sites-available/webmail.[DOMAIN].conf
+```
+
+### Aktifkan virtual host webmail:
+```bash
 sudo a2ensite webmail.[DOMAIN].conf
 ```
 
@@ -336,7 +377,7 @@ sudo ufw allow from 192.168.56.0/24 to any port 80 proto tcp && sudo ufw reload
 
 ---
 
-## 7. Konfigurasi SSL (Self-Signed untuk Testing Lokal)
+## 8. Konfigurasi SSL (Self-Signed untuk Testing Lokal)
 
 ### Buat sertifikat self-signed:
 ```bash
@@ -433,6 +474,7 @@ Jika memerlukan modifikasi, sesuaikan placeholder dan uji setiap bagian secara b
 
 ## Placeholder yang Perlu Diganti
 
+- `[NAMA_USER]` - Nama user baru yang akan dibuat (contoh: `admin`)
 - `[IP_HOST_ONLY]` - IP address untuk interface Host-Only (contoh: `192.168.56.10`)
 - `[IP_PUBLIK]` - IP address publik atau eksternal (contoh: `185.125.190.21`)
 - `[IP_GATEWAY_HOST_ONLY]` - Gateway untuk Host-Only network (contoh: `192.168.56.1`)
