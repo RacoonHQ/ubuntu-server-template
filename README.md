@@ -323,6 +323,7 @@ echo "<h1>Webmail [DOMAIN]</h1>" | sudo tee /var/www/webmail.[DOMAIN]/public_htm
 #### Opsi 1: Copy template yang sudah ada (lebih cepat)
 ```bash
 sudo cp /etc/apache2/sites-available/serverubuntu.com.conf /etc/apache2/sites-available/[DOMAIN].conf
+
 # Edit file yang sudah di-copy untuk menyesuaikan [DOMAIN]
 sudo nano /etc/apache2/sites-available/[DOMAIN].conf
 ```
@@ -357,6 +358,7 @@ sudo a2ensite [DOMAIN].conf
 #### Opsi 1: Copy template yang sudah ada (lebih cepat)
 ```bash
 sudo cp /etc/apache2/sites-available/serverubuntu.com.conf /etc/apache2/sites-available/webmail.[DOMAIN].conf
+
 # Edit file yang sudah di-copy untuk menyesuaikan ServerName dan DocumentRoot
 sudo nano /etc/apache2/sites-available/webmail.[DOMAIN].conf
 ```
