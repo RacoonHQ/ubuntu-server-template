@@ -318,16 +318,21 @@ echo "<h1>Selamat Datang di [DOMAIN]</h1>" | sudo tee /var/www/[DOMAIN]/public_h
 echo "<h1>Webmail [DOMAIN]</h1>" | sudo tee /var/www/webmail.[DOMAIN]/public_html/index.html
 ```
 
-### Virtual host utama:
-```bash
-# Opsi 1: Copy template yang sudah ada (lebih cepat)
-sudo cp /etc/apache2/sites-available/serverubuntu.com.conf /etc/apache2/sites-available/[DOMAIN].conf
+### Buat dan konfigurasi virtual host:
 
-# Opsi 2: Buat file baru dari awal
+#### Opsi 1: Copy template yang sudah ada (lebih cepat)
+```bash
+sudo cp /etc/apache2/sites-available/serverubuntu.com.conf /etc/apache2/sites-available/[DOMAIN].conf
+# Edit file yang sudah di-copy untuk menyesuaikan [DOMAIN]
 sudo nano /etc/apache2/sites-available/[DOMAIN].conf
 ```
 
-### Isi konfigurasi:
+#### Opsi 2: Buat file baru dari awal
+```bash
+sudo nano /etc/apache2/sites-available/[DOMAIN].conf
+```
+
+### Isi konfigurasi (untuk Opsi 2):
 ```apache
 <VirtualHost *:80>
     ServerName [DOMAIN]
@@ -347,13 +352,33 @@ sudo nano /etc/apache2/sites-available/[DOMAIN].conf
 sudo a2ensite [DOMAIN].conf
 ```
 
-### Virtual host webmail (mirip, ganti ServerName dan DocumentRoot):
-```bash
-# Opsi 1: Copy template yang sudah ada (lebih cepat)
-sudo cp /etc/apache2/sites-available/serverubuntu.com.conf /etc/apache2/sites-available/webmail.[DOMAIN].conf
+### Buat dan konfigurasi virtual host webmail (mirip, ganti ServerName dan DocumentRoot):
 
-# Opsi 2: Buat file baru dari awal
+#### Opsi 1: Copy template yang sudah ada (lebih cepat)
+```bash
+sudo cp /etc/apache2/sites-available/serverubuntu.com.conf /etc/apache2/sites-available/webmail.[DOMAIN].conf
+# Edit file yang sudah di-copy untuk menyesuaikan ServerName dan DocumentRoot
 sudo nano /etc/apache2/sites-available/webmail.[DOMAIN].conf
+```
+
+#### Opsi 2: Buat file baru dari awal
+```bash
+sudo nano /etc/apache2/sites-available/webmail.[DOMAIN].conf
+```
+
+### Isi konfigurasi webmail (untuk Opsi 2):
+```apache
+<VirtualHost *:80>
+    ServerName webmail.[DOMAIN]
+    DocumentRoot /var/www/webmail.[DOMAIN]/public_html
+    <Directory /var/www/webmail.[DOMAIN]/public_html>
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+    ErrorLog ${APACHE_LOG_DIR}/webmail.[DOMAIN]_error.log
+    CustomLog ${APACHE_LOG_DIR}/webmail.[DOMAIN]_access.log combined
+</VirtualHost>
 ```
 
 ### Aktifkan virtual host webmail:
