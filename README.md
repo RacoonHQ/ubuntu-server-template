@@ -339,12 +339,9 @@ sudo nano /etc/apache2/sites-available/[DOMAIN].conf
     ServerName [DOMAIN]
     DocumentRoot /var/www/[DOMAIN]/public_html
     <Directory /var/www/[DOMAIN]/public_html>
-        Options Indexes FollowSymLinks
         AllowOverride All
         Require all granted
     </Directory>
-    ErrorLog ${APACHE_LOG_DIR}/[DOMAIN]_error.log
-    CustomLog ${APACHE_LOG_DIR}/[DOMAIN]_access.log combined
 </VirtualHost>
 ```
 
@@ -374,12 +371,9 @@ sudo nano /etc/apache2/sites-available/webmail.[DOMAIN].conf
     ServerName webmail.[DOMAIN]
     DocumentRoot /var/www/webmail.[DOMAIN]/public_html
     <Directory /var/www/webmail.[DOMAIN]/public_html>
-        Options Indexes FollowSymLinks
         AllowOverride All
         Require all granted
     </Directory>
-    ErrorLog ${APACHE_LOG_DIR}/webmail.[DOMAIN]_error.log
-    CustomLog ${APACHE_LOG_DIR}/webmail.[DOMAIN]_access.log combined
 </VirtualHost>
 ```
 
