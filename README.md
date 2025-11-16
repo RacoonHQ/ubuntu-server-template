@@ -231,7 +231,7 @@ $TTL    604800
 @       IN      NS      ns1.[DOMAIN].
 @       IN      A       [IP_PUBLIK]
 ns1     IN      A       [IP_PUBLIK]
-webmail IN     A       [IP_PUBLIK]
+webmail IN      A       [IP_PUBLIK]
 ```
 
 ### Edit opsi BIND:
